@@ -2,7 +2,7 @@
 import asyncio
 import websockets
 
-async def handle_socket(websocket, path):
+async def handle_socket(websocket):
     async for message in websocket:
         print(f"Received message: {message}")
 
