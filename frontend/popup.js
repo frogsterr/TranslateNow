@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    popupText = document.createElement('div');
+    const popupText = document.createElement('div');
     const videoButton = document.getElementById('videoTranslateButton');
     const videoOffButton = document.getElementById('videoOffButton');
     var videoStream;
