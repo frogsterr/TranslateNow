@@ -2,9 +2,17 @@
     "name": "TranslateNow",
     "version": "1.0",
     "manifest_version": 3,
+    "permissions": [
+      "activeTab",
+      "tabs",
+      "storage"
+      ],
     "description": "Prototype of ASL Translation Extension",
     "action": {
         "default_icon": "SignWaveHand.png",
         "default_popup": "index.html"
-    }
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self';"
+      }
 }

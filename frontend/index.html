@@ -3,12 +3,8 @@
 <head>
   <title>SignWave Labs</title>
   <link href="styles.css" rel="stylesheet">
-  <script src="script.js"></script>
-   <!-- Include Bootstrap CSS from CDN (or use local files) -->
+  <script src="popup.js"></script>
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-   <!-- Include Bootstrap JavaScript from CDN (or use local files) -->
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
   <h2 class="gradient-text" style="font-weight: bold;">SignWave Labs</h2>
@@ -18,6 +14,7 @@
     <button id="videoTranslateButton" class="btn btn-outline-dark">On</button> 
     <button id ="videoOffButton" class="btn btn-outline-dark">Off</button>
   </div>
+  <video id="videoElement" autoplay playsinline></video>
   </div>
   
 </body>
