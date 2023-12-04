@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    newDiv = document.createElement('div');
+    popupText = document.createElement('div');
     const videoButton = document.getElementById('videoTranslateButton');
     const videoOffButton = document.getElementById('videoOffButton');
-    const videoElement = document.getElementById('videoElement'); //Won't Need Later.
     var videoStream;
+
+    //Remove Later
+    const videoElement = document.getElementById('videoElement');
+
 
     videoButton.addEventListener('click', () => {
         //Establish Connection to Websocket
@@ -17,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onOffSwitch(onButton=videoButton, offButton=videoOffButton);
     });
 
+    
     videoOffButton.addEventListener('click', () => {
         //Terminate WS connection
         turnOffConnection(videoSocket);
@@ -30,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-
+//Toggle On-Off button colors
 const onOffSwitch = (onButton, offButton) => {
     onButton.classList.remove("btn-outline-dark");
     onButton.classList.add("btn-dark");
@@ -40,15 +44,15 @@ const onOffSwitch = (onButton, offButton) => {
         };
 }
 
-
+//Establishes websocket connection
 const establishConnection = endpoint => {
     //Creates socket object
     videoSocket = new WebSocket(endpoint);
 
     //Connects to endpoint and verifies with text overlay
     videoSocket.addEventListener('open', () => {
-        newDiv.textContent = 'Connected to server!';
-        document.body.appendChild(newDiv);
+        popupText.textContent = 'Connected to server!';
+        document.body.appendChild(popupText);
         sendData(videoSocket, "Client has connected!");
         websocketExists = true;
 
@@ -57,7 +61,7 @@ const establishConnection = endpoint => {
     //
     videoSocket.addEventListener("message", (r) => {
         console.log(r);
-        newDiv.textContent = `${r.data}`;
+        popupText.textContent = `${r.data}`;
     });
 };
 
@@ -66,7 +70,7 @@ const turnOffConnection = socket => {
     if (websocketExists) {
         socket.close();
         websocketExists = false;
-        newDiv.textContent = 'Disconnected from server.';
+        popupText.textContent = 'Disconnected from server.';
         console.log("connection closed");
     } else {
         console.log("Connection Doesn't exist");
@@ -78,7 +82,7 @@ function sendData(socket, message) {
     if (socket.readyState === WebSocket.OPEN) {
         socket.send(message);
     } else {
-        newDiv.textContent = 'Error sending message!';
+        popupText.textContent = 'Error sending message!';
     };
 };
 
@@ -89,13 +93,18 @@ function stopVideoStream() {
             track.stop();
         });
         videoStream = null;
-        newDiv.textContent = 'Closed Stream';
+
+        //REMOVE LATER
+        popupText.textContent = 'Closed Stream';
 };
 
 //Starts video stream
 const startVideoStream = () => {
     navigator.mediaDevices.getUserMedia({video: true}).then(function(stream) {
+
+        //REMOVE LATER
         videoElement.srcObject = stream;
+
         videoStream = stream;
     }).catch(function() {
         alert('Unable to capture your camera.');
