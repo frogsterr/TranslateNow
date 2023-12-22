@@ -10,23 +10,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             chrome.runtime.sendMessage({command: 'serviceOn'});
             console.log(`Pop-up Opened, all SHOULD work: Camera: ${videoStreamExists}, WebSocket: ${websocketExists}`);
         } else {
+            chrome.runtime.sendMessage({command: 'serviceOff'});
             console.log(`Pop-up Opened: Camera: ${videoStreamExists}, WebSocket: ${websocketExists}`);
         };
     };
 
     //If On Button is clicked on Pop-up, create recorder tab and startStream
     if (request.command === 'videoOnButtonClicked') {
-            if (!videoStreamExists) {
-                chrome.tabs.create({url:'recorder.html', pinned:true, active:false});
-                chrome.runtime.sendMessage({command: 'startStream'});
-                establishConnection("ws://localhost:8079/");
-                chrome.runtime.sendMessage({command: 'serviceOn'});
+            if (!videoStreamExists && !websocketExists) {
+                serviceOn(() => {
+                    if (websocketExists && videoStreamExists) { //IF WS SHUTDOWN ITS DOOMED
+                        console.log(websocketExists);
+                        chrome.runtime.sendMessage({command: 'startStream'});
+                    };
+                });
             };
         };
 
+
     if (request.command ==='videoOffButtonClicked') {
         if (videoStreamExists && websocketExists) {
-
             //Close recorder tab
             chrome.tabs.query({url: "chrome-extension://fobmonohfpdlbbffbdpfbjhppkjaohkk/recorder.html"}, tabs => {
                     if (tabs.length > 0) {
@@ -34,25 +37,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         chrome.tabs.remove(recorderID);
                         videoStreamExists = false;
                         videoStream = null;
+                        //Turn off websocket connection
+                        turnOffConnection(videoSocket);
+                        chrome.runtime.sendMessage({command: 'serviceOff'});
                     };
             });
-
-            //Turn off websocket connection
-            turnOffConnection(videoSocket);
-            chrome.runtime.sendMessage({command: 'serviceOff'});
-            console.log(`ALL SHOULD BE OFF: Camera: ${videoStreamExists}, WebSocket: ${websocketExists}`);
         };
     };
 
-    //If Recorder tab is streaming, videoStreamExists is true
+
     if (request.command === 'streamRunning') {
         videoStreamExists = true;
         videoStream = request.mediaStream;
-        console.log(`Stream is running! Stream: ${videoStream}`);
-    };
-
-    if (request.command === 'cameraAllowed') {
-        camAllowed = true;
+        chrome.runtime.sendMessage({command: 'serviceOn'});
     };
 });
 
@@ -65,19 +62,25 @@ chrome.tabs.onRemoved.addListener((recorderID, removeInfo) => {
 //Establishes websocket connection
 const establishConnection = endpoint => {
     if (!websocketExists) {
-    //Creates socket object
-    videoSocket = new WebSocket(endpoint);
+            //Creates socket object
+            videoSocket = new WebSocket(endpoint);
 
-    //Connects to endpoint and verifies with text overlay
-    videoSocket.addEventListener('open', () => {
-        sendData(videoSocket, "Background Client has connected!");
-        websocketExists = true;
+            //Connects to endpoint and verifies with text overlay
+            videoSocket.addEventListener('open', () => {
+            sendData(videoSocket, "Background Client has connected!");
+            websocketExists = true;
 
-    });
+            });
 
-    videoSocket.addEventListener("message", (r) => {
-        console.log(r.data);
-    });
+            //WS Error event
+            videoSocket.onerror = error => {
+                console.error(`ERROR STARTING WS: ${error}`);
+                websocketExists = false;
+            }
+
+            videoSocket.addEventListener("message", (r) => {
+                console.log(r.data);
+            });
     };
 };
 
@@ -125,3 +128,12 @@ function stopVideoStream() {
         videoStreamExists = false;
     };
 };
+
+const serviceRunning = () => {
+    chrome.runtime.sendMessage({command: 'serviceOn'});
+};
+
+const serviceOn = () => {
+    chrome.tabs.create({url:'recorder.html', pinned:true, active:false});
+    establishConnection("ws://localhost:8079/");
+}

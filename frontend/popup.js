@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         if (request.command === 'serviceOff') {
             onOffSwitch(onButton=videoOffButton, offButton=videoButton);
-        }
+        };
     });
 
     //Background.js -> turns ON service
