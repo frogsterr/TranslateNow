@@ -1,5 +1,5 @@
 {
-    "name": "TranslateNow",
+    "name": "TranslateNowProto",
     "version": "1.0",
     "manifest_version": 3,
     "permissions": [
@@ -9,10 +9,14 @@
       ],
     "description": "Prototype of ASL Translation Extension",
     "action": {
-        "default_icon": "SignWaveHand.png",
-        "default_popup": "index.html"
+        "default_icon": "SignWaveHandTransparent.png",
+        "default_popup": "popup.html"
     },
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self';"
-      }
+      },
+    "options_page": "options.html",
+    "background": {
+      "service_worker": "background.js"
+    }
 }

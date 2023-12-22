@@ -1,0 +1,8 @@
+body {
+    background-image: url("Recording\ Tab.png");
+    background-size: cover;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    height: 90vh; /* Make sure the body takes up the full viewport height */
+  }
+

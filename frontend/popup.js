@@ -1,37 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    popupText = document.createElement('div');
     const videoButton = document.getElementById('videoTranslateButton');
     const videoOffButton = document.getElementById('videoOffButton');
-    var videoStream;
+    const optionsButton = document.getElementById('goOptionsButton');
+  
+    //Asks Background.js if service is running.
+    chrome.runtime.sendMessage({command: "validateState"});
 
-    //Remove Later
-    const videoElement = document.getElementById('videoElement');
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.command === 'serviceOn') {
+            onOffSwitch(onButton=videoButton, offButton=videoOffButton);
+        };
+        if (request.command === 'serviceOff') {
+            onOffSwitch(onButton=videoOffButton, offButton=videoButton);
+        }
+    });
 
-
+    
     videoButton.addEventListener('click', () => {
-        //Establish Connection to Websocket
-        establishConnection('ws://localhost:8079'); 
-
-        //Get user video
-        startVideoStream(); 
-
-        //Toggle On-Off button colors
-        onOffSwitch(onButton=videoButton, offButton=videoOffButton);
+        chrome.runtime.sendMessage({command: "videoOnButtonClicked"});
     });
 
     
     videoOffButton.addEventListener('click', () => {
-        //Terminate WS connection
-        turnOffConnection(videoSocket);
+        chrome.runtime.sendMessage({command: "videoOffButtonClicked"});
+    }); 
 
-        //Turn off Video Stream
-        stopVideoStream();
 
-        //Toggle On-Off button colors
-        onOffSwitch(onButton=videoOffButton, offButton=videoButton);
+    optionsButton.addEventListener('click', () => {
+        //Create New Chrome Tab
+        chrome.tabs.create({url:'options.html', pinned:false, active: true});
     });
-
 });
 
 //Toggle On-Off button colors
