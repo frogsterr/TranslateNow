@@ -47,9 +47,8 @@ chrome.runtime.onMessage.addListener(request => {
         if (!videoStream) {
             chrome.runtime.sendMessage({ command: 'serviceOn' });
         };
-
         videoStream = request.base64Stream;
-        console.log(videoStream);
+        videoSocket.send(videoStream);
     };
 });
 
