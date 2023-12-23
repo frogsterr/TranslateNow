@@ -1,7 +1,8 @@
+
 let videoSocket = null;
 let videoStream = null;
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(request => {
 
     // Checks if Service is Currently Running. If it is, send serviceOn state to PopUp
     if (request.command === 'validateState') {
@@ -35,17 +36,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     chrome.tabs.remove(recorderID);
                     videoStream = null;
                 };
-
                 //Turn off websocket connection
                 turnOffConnection(videoSocket);
                 chrome.runtime.sendMessage({ command: 'serviceOff' });
-            });
+            })
         };
     };
-
+    //If stream is not on, turn-on and toggle button. Else, service should already be on, continue stream.
     if (request.command === 'streamRunning') {
-        videoStream = request.mediaStream;
-        chrome.runtime.sendMessage({ command: 'serviceOn' });
+        if (!videoStream) {
+            chrome.runtime.sendMessage({ command: 'serviceOn' });
+        };
+
+        videoStream = request.base64Stream;
+        console.log(videoStream);
     };
 });
 
@@ -101,7 +105,7 @@ function sendData(socket, message) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(message);
     } else {
-        console.log("some issue with sending data func");
+        console.error("Socket not open, error sending message.");
     };
 };
 
@@ -120,13 +124,10 @@ const startVideoStream = () => {
 // Stops video stream
 function stopVideoStream() {
     if (videoStream) {
-        var tracks = videoStream.getTracks();
-        tracks.forEach((track) => {
-            track.stop();
-        });
+        chrome.runtime.sendMessage({command: 'stopStream'});
+        };
         videoStream = null;
     };
-};
 
 //Opens recorder tab and establishes WS conn.
 const serviceOn = () => {

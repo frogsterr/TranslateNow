@@ -12,10 +12,11 @@
     justify-content: center;
     height: 100vh;
     background-color: #f8ebd3;
-    width: 400px; /* Set the width of the popup */
-    height: 600px; /* Set the height of the popup */
+    width: 300px; /* Set the width of the popup */
+    height: 335px; /* Set the height of the popup */
     margin: 0;
-    padding: 30px; /* Optional: Add padding for better visual appearance */
+    padding: 25px; /* Optional: Add padding for better visual appearance */
+
   }
 .centered-container {
     text-align: center; /* Center the content horizontally */
@@ -29,9 +30,3 @@
 .button-container {
     margin: 10px;
   }
-
-#videoElement {
-    width: 100%; /* Set width according to your layout */
-    height: auto; /* Maintain aspect ratio */
-  }
-  

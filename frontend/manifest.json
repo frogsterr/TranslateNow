@@ -12,9 +12,6 @@
         "default_icon": "SignWaveHandTransparent.png",
         "default_popup": "popup.html"
     },
-    "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self';"
-      },
     "options_page": "options.html",
     "background": {
       "service_worker": "background.js"
