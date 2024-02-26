@@ -15,20 +15,15 @@ chrome.runtime.onMessage.addListener(request => {
         };
     };
 
-    // Create recorder tab and connect to the server, then callback to ask recorder tab to start stream
+    // Create recorder tab and connect to the server
     if (request.command === 'videoOnButtonClicked') {
         if (!videoSocket && !videoStream) {
-            serviceOn(() => {
-                if (videoSocket && videoStream) {
-                    chrome.runtime.sendMessage({ command: 'startStream'});
-                };
-            });
+            serviceOn();
         };
     };
 
     //If service is on, delete recorder tab and disconnect from websocket
     if (request.command === 'videoOffButtonClicked') {
-        if (videoStream && videoSocket) {
             // Close recorder tab
             chrome.tabs.query({ url: "chrome-extension://fobmonohfpdlbbffbdpfbjhppkjaohkk/recorder.html" }, tabs => {
                 if (tabs.length > 0) {
@@ -40,13 +35,11 @@ chrome.runtime.onMessage.addListener(request => {
                 turnOffConnection(videoSocket);
                 chrome.runtime.sendMessage({ command: 'serviceOff' });
             })
-        };
     };
+
     //If stream is not on, turn-on and toggle button. Else, service should already be on, continue stream.
-    if (request.command === 'streamRunning') {
-        if (!videoStream) {
-            chrome.runtime.sendMessage({ command: 'serviceOn' });
-        };
+    if (request.command === 'streamRunning' && videoStream && videoSocket) {
+        chrome.runtime.sendMessage({ command: 'serviceOn' });
         videoStream = request.base64Stream;
         videoSocket.send(videoStream);
     };
@@ -59,7 +52,6 @@ chrome.tabs.onRemoved.addListener((recorderID, removeInfo) => {
 
 // Establishes websocket connection
 const establishConnection = endpoint => {
-    if (!videoSocket) {
         try {
             // Creates socket object
             videoSocket = new WebSocket(endpoint);
@@ -85,7 +77,6 @@ const establishConnection = endpoint => {
             console.error(error);
             videoSocket = null;
         };
-    };
 };
 
 // Turns off websocket connection
@@ -109,6 +100,7 @@ function sendData(socket, message) {
 };
 
 // Starts video stream
+/*
 const startVideoStream = () => {
     if (!videoStream) {
         navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
@@ -119,6 +111,7 @@ const startVideoStream = () => {
         });
     };
 };
+*/
 
 // Stops video stream
 function stopVideoStream() {
@@ -130,6 +123,7 @@ function stopVideoStream() {
 
 //Opens recorder tab and establishes WS conn.
 const serviceOn = () => {
+    establishConnection("ws://localhost:8079/"); //Moved Order
     chrome.tabs.create({ url: 'recorder.html', pinned: true, active: false });
-    establishConnection("ws://localhost:8079/");
+    videoStream = true;
 };
