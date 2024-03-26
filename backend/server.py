@@ -1,27 +1,9 @@
-'''
 import asyncio
 import websockets
-from decoder import dataToImage
+from utils import dataToImage, HandTracker
+import cv2
 
- 
-async def handle_socket(websocket):
-    async for message in websocket:
-        dataToImage(message)
-        print(f"Received message: {message}")
-
-        response = "Message Received!"
-        await websocket.send(response)
-
-async def main():
-    async with websockets.serve(handle_socket, "localhost", 8079):
-        await asyncio.Future()
-
-if __name__ == "__main__":
-    asyncio.run(main())
-    '''
-import asyncio
-import websockets
-from decoder import dataToImage
+hands = HandTracker()
 
 async def handle_socket(websocket):
     frame_count = 0
@@ -29,8 +11,14 @@ async def handle_socket(websocket):
 
     async for message in websocket:
         dataToImage(message)
-        #print(f"Received message: {message}")
-
+        img = cv2.imread("output.jpg")
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
+        res = hands.results(imgRGB)
+        if res.multi_hand_landmarks:
+            for lm in res.multi_hand_landmarks:
+                print(f"this is one individual lm: {lm.landmark}")
+                #for id, lm in enumerate(lm.landmark):
+                    #print(f"Here is id: {id}. Here is lm: {lm}")
         response = "Message Received!"
         await websocket.send(response)
 

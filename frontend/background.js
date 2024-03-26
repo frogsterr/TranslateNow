@@ -22,6 +22,7 @@ chrome.runtime.onMessage.addListener(request => {
         };
     };
 
+
     //If service is on, delete recorder tab and disconnect from websocket
     if (request.command === 'videoOffButtonClicked') {
             // Close recorder tab
@@ -123,7 +124,7 @@ function stopVideoStream() {
 
 //Opens recorder tab and establishes WS conn.
 const serviceOn = () => {
-    establishConnection("ws://localhost:8079/"); //Moved Order
+    establishConnection("ws://localhost:8079/"); 
     chrome.tabs.create({ url: 'recorder.html', pinned: true, active: false });
     videoStream = true;
 };

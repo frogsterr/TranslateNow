@@ -1,12 +1,16 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
+
         //Records user video
         navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
-    
+
+
         const videoElement = document.createElement('video');
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        videoElement.srcObject = stream
-
+        videoElement.srcObject = stream;
+ 
         //Every 100 ms grab from video and convert to Base64 -> Background.js
         setInterval(() => {
             context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
