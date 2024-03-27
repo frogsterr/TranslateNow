@@ -1,0 +1,6 @@
+asyncio
+websockets
+mediapipe
+opencv-python
+pillow
+numpy
